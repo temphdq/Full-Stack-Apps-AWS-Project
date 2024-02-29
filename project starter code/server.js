@@ -40,11 +40,17 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util.js';
 
       return filterImageFromURL(image_url).then(
         filtered_image => {
-          image = res.status(200).sendFile(filtered_image);
-          deleteLocalFiles([filtered_image]);
-          return image;
-        },
-        () => res.status(404).send(`image not found`)
+          return res.status(200).sendFile(filtered_image);
+        }).catch(
+        () => {
+          res.status(404).send(`image not found`);
+        }
+      )
+      .finally(filtered_image => 
+        {
+          if (filtered_image)
+            deleteLocalFiles([filtered_image]);
+        }
       );
   } );
 
